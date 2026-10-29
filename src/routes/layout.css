@@ -1,0 +1,17 @@
+@import 'tailwindcss';
+@plugin '@tailwindcss/forms';
+@plugin '@tailwindcss/typography';
+
+@import '@fontsource/open-sauce-sans';
+@import '@fontsource/open-sauce-sans/300.css';
+@import '@fontsource/open-sauce-sans/500.css';
+@import '@fontsource/open-sauce-sans/700.css';
+@import '@fontsource/open-sauce-sans/900.css';
+
+@theme {
+	--background-color: var(--color-white);
+	--color-text-primary: black;
+	--color-text-secondary: var(--color-neutral-800);
+	--color-white: #eeeeee;
+	--color-accent: #db4952;
+}
