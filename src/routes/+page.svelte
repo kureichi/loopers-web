@@ -1,6 +1,9 @@
 <script lang="ts">
 	import { isYesterday } from '#lib/utils.js';
+	import { subOptions } from '#lib/utils/vapidKey.js';
+	import { browser } from '$app/env';
 	import { enhance } from '$app/forms';
+	import { onMount } from 'svelte';
 
 	let { data } = $props();
 
@@ -40,6 +43,40 @@
 
 	$effect(() => {
 		document.getElementById(`element-${activeDay}`)?.scrollIntoView({ behavior: 'smooth' });
+	});
+
+	async function subscribeUser() {
+		if (!browser || !('serviceWorker' in navigator)) return;
+
+		try {
+			const registration = await navigator.serviceWorker.ready;
+			const subscribe = await registration.pushManager.subscribe(subOptions);
+
+			const response = await fetch('/api/subscribe', {
+				method: 'POST',
+				body: JSON.stringify({
+					userId: data.user.id,
+					subscription: subscribe
+				}),
+				headers: { 'content-type': 'application/json' }
+			});
+
+			const parsedResponse: {
+				success: boolean;
+				message: string;
+			} = await response.json();
+
+			if (!response.ok) {
+				throw new Error('API response is not OK: ' + parsedResponse.message);
+			}
+		} catch (e) {
+			console.error('Failed adding subscription to api: ' + e);
+		}
+	}
+
+	onMount(() => {
+		Notification.requestPermission();
+		subscribeUser();
 	});
 </script>
 
