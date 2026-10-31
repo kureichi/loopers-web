@@ -7,7 +7,7 @@
 	let activeDay = $derived(data.ball.count);
 	let now = new Date();
 
-	let claimed = $derived(!isYesterday(data.ball.updatedAt, now) && activeDay > 0);
+	let claimed = $derived(!isYesterday(data.ball.updatedAt, now));
 
 	let character_list = [
 		{
