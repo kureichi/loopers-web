@@ -18,5 +18,9 @@ export const variables = defineEnvVars({
 	GITHUB_CLIENT_SECRET: {
 		description:
 			'GitHub OAuth client secret. See [Better Auth GitHub provider](https://www.better-auth.com/docs/authentication/github).'
-	}
+	},
+	PUBLIC_VAPID_KEY: {
+		public: true
+	},
+	PRIVATE_VAPID_KEY: {}
 });
