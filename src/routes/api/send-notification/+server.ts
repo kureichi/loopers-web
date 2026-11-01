@@ -1,38 +1,40 @@
 import Subscription from '#lib/server/db/models/subscription.ts';
-import webpush from 'web-push';
-import { PUBLIC_VAPID_KEY } from '$app/env/public';
-import { PRIVATE_VAPID_KEY } from '$app/env/private';
 import Ball from '#lib/server/db/models/ball.ts';
+import { sendNotification } from '#lib/utils/notification/notifyUser.ts';
 import { isYesterday } from '#lib/utils.ts';
 
-webpush.setVapidDetails('mailto:anda@domain.com', PUBLIC_VAPID_KEY, PRIVATE_VAPID_KEY);
-
 export async function GET() {
-	const subscriptions = await Subscription.find({});
+	const balls = await Ball.find({});
 
-	if (subscriptions.length == 0) {
+	if (balls.length == 0) {
 		return Response.json({ error: 'Belum ada user yang terdaftar!' }, { status: 400 });
 	}
 
-	const payload = JSON.stringify({
-		title: "You haven't push yet on this day",
-		body: 'Lets push before you late!'
-	});
+	let userNotified = 0;
+	let browserNotified = 0;
 
-	for (const subscription of subscriptions) {
+	for (const ball of balls) {
 		try {
-			const ball = await Ball.findOne({ userId: subscription.userId });
-			if (!ball) return;
-
 			const isClaimed = !isYesterday(ball.updatedAt, new Date());
 
 			if (!isClaimed) {
-				await webpush.sendNotification(JSON.parse(subscription.subscription), payload);
+				userNotified++;
+
+				const subscriptions = await Subscription.find({ userId: ball.userId });
+
+				for (const subscription of subscriptions) {
+					browserNotified++;
+					await sendNotification(JSON.parse(subscription.subscription));
+				}
 			}
 		} catch (err) {
 			console.warn(err);
 		}
 	}
 
-	return Response.json({ success: true });
+	return Response.json({
+		success: true,
+		user_notified: userNotified,
+		browser_notified: browserNotified
+	});
 }

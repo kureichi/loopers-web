@@ -4,19 +4,20 @@ import { type RequestHandler } from '@sveltejs/kit';
 
 export const POST: RequestHandler = async ({ request }) => {
 	const data = (await request.json()) as SubscriptionRequest;
+	const subscriptionString = JSON.stringify(data.subscription);
 
-	const subscription = Subscription.findOne({ userId: data.userId });
+	const subscription = await Subscription.findOne({ subscription: subscriptionString });
 
 	if (!subscription) {
 		Subscription.create({
 			userId: data.userId,
-			subscription: JSON.stringify(data.subscription)
+			subscription: subscriptionString
 		});
 		return Response.json({ success: true });
 	}
 
 	return Response.json(
-		{ success: false, message: 'You have already subscription' },
+		{ success: false, message: 'Subscription already in database.' },
 		{ status: 400 }
 	);
 };
