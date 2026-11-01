@@ -17,5 +17,6 @@
 		background-color: var(--background-color);
 		color: var(--color-text-primary);
 		font-family: 'Open Sauce Sans';
+		font-weight: 500;
 	}
 </style>
