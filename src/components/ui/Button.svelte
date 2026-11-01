@@ -11,7 +11,7 @@
 
 <button
 	{...rest}
-	class="rounded-md bg-[#db4952] px-4 py-3 text-sm font-medium text-white {klass} cursor-pointer transition-transform active:scale-98"
+	class="rounded-xl bg-[#db4952] px-4 py-3 text-sm font-medium text-white {klass} cursor-pointer transition-transform active:scale-98"
 >
 	{@render children()}
 </button>
