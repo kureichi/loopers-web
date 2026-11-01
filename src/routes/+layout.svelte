@@ -8,6 +8,7 @@
 
 <svelte:head>
 	<link rel="icon" href={favicon} />
+	<script src="https://unpkg.com/phosphor-icons"></script>
 </svelte:head>
 
 {@render children()}

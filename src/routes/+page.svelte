@@ -3,7 +3,7 @@
 	import { subOptions } from '#lib/utils/vapidKey.js';
 	import { browser } from '$app/env';
 	import { onMount } from 'svelte';
-	import ZenlessZoneZero from '../components/modules/themes/ZenlessZoneZero.svelte';
+	import Simple from '../components/modules/themes/Simple.svelte';
 
 	let { data } = $props();
 
@@ -17,13 +17,17 @@
 
 		try {
 			const registration = await navigator.serviceWorker.ready;
-			const subscribe = await registration.pushManager.subscribe(subOptions);
+
+			let subscription = await registration.pushManager.getSubscription();
+			if (!subscription) {
+				subscription = await registration.pushManager.subscribe(subOptions);
+			}
 
 			const response = await fetch('/api/subscribe', {
 				method: 'POST',
 				body: JSON.stringify({
 					userId: data.user.id,
-					subscription: subscribe
+					subscription: subscription
 				}),
 				headers: { 'content-type': 'application/json' }
 			});
@@ -41,10 +45,15 @@
 		}
 	}
 
-	onMount(() => {
-		Notification.requestPermission();
-		subscribeUser();
+	onMount(async () => {
+		const permission = await Notification.requestPermission();
+		if (permission !== 'granted') {
+			console.log('Notification Pemission rejected.');
+			return;
+		}
+
+		await subscribeUser();
 	});
 </script>
 
-<ZenlessZoneZero {count} {isClaimed} user={data.user} />
+<Simple {count} {isClaimed} user={data.user} />
