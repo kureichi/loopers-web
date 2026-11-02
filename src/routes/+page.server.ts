@@ -48,5 +48,19 @@ export const actions: Actions = {
 		);
 
 		return redirect(302, '/');
+	},
+	reset: async (event) => {
+		const ball = await Ball.findOne({ userId: event.locals.user?.id }).lean();
+		if (!ball) return redirect(302, '?/signOut');
+
+		await Ball.updateOne(
+			{ userId: event.locals.user?.id },
+			{
+				count: 0,
+				updatedAt: new Date()
+			}
+		);
+
+		return redirect(302, '/');
 	}
 };

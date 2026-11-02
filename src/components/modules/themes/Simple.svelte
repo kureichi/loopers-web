@@ -10,6 +10,60 @@
 		user: User;
 	}
 
+	let isHoldClick = $state(false);
+	let timeoutWantReset: NodeJS.Timeout | undefined = $state();
+
+	let isWantReset = $state(false);
+
+	$effect(() => {
+		if (!isHoldClick) {
+			clearTimeout(timeoutWantReset);
+			return;
+		}
+
+		timeoutWantReset = setTimeout(() => {
+			isWantReset = true;
+			isHoldClick = false;
+		}, 1000);
+
+		return () => {
+			clearTimeout(timeoutWantReset);
+		};
+	});
+
+	let timeoutCancelled: NodeJS.Timeout | undefined = $state();
+	$effect(() => {
+		if (isWantReset) {
+			timeoutCancelled = setTimeout(() => {
+				isWantReset = false;
+			}, 2000);
+			return;
+		}
+
+		if (!isWantReset) {
+			clearTimeout(timeoutCancelled);
+			return;
+		}
+
+		return () => {
+			clearTimeout(timeoutCancelled);
+		};
+	});
+
+	$effect(() => {
+		if (isWantReset) {
+			console.log('User want reset');
+		}
+
+		if (!isWantReset) {
+			console.log('want reset false');
+		}
+	});
+
+	$effect(() => {
+		console.log(isHoldClick);
+	});
+
 	let { count, isClaimed, user }: Props = $props();
 </script>
 
@@ -23,9 +77,21 @@
 		</div>
 
 		<div class="mt-15 flex w-full max-w-100 gap-1">
-			<form action="?/push" class="flex flex-1" method="post" use:enhance>
-				<Button class="w-full" disabled={isClaimed}>{isClaimed ? 'Done' : 'Push'}</Button>
-			</form>
+			{#if isWantReset}
+				<form action="?/reset" class="flex flex-1" method="post" use:enhance>
+					<Button class="w-full bg-accent! text-white!">Reset</Button>
+				</form>
+			{:else}
+				<form action="?/push" class="flex flex-1" method="post" use:enhance>
+					<Button
+						onpointerdown={() => (isHoldClick = true)}
+						onpointerup={() => (isHoldClick = false)}
+						onpointerleave={() => (isHoldClick = false)}
+						class="w-full"
+						disabled={isClaimed}>{isClaimed ? 'Done' : 'Push'}</Button
+					>
+				</form>
+			{/if}
 			<form action="?/signOut" class="flex" method="post" use:enhance>
 				<Button
 					class="flex aspect-square items-center justify-center bg-neutral-800! p-0! text-center text-white"
