@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { isYesterday } from '#lib/utils.js';
 	import { subOptions } from '#lib/utils/vapidKey.js';
 	import { browser } from '$app/env';
 	import { onMount } from 'svelte';
@@ -8,9 +7,8 @@
 	let { data } = $props();
 
 	let count = $derived(data.ball.count);
-	let now = new Date();
 
-	let isClaimed = $derived(!isYesterday(data.ball.updatedAt, now));
+	let isClaimed = $derived(data.isClaimed);
 
 	async function subscribeUser() {
 		if (!browser || !('serviceWorker' in navigator)) return;

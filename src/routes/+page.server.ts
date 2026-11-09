@@ -2,18 +2,21 @@ import { redirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 import { auth } from '#lib/server/auth.ts';
 import Ball from '#lib/server/db/models/ball.ts';
+import { isYesterday } from '#lib/utils.js';
 
 export const load: PageServerLoad = async (event) => {
 	if (!event.locals.user) {
 		return redirect(302, '/login');
 	}
 
+	const now = new Date();
+
 	let ball = await Ball.findOne({ userId: event.locals.user.id }).lean();
 	if (!ball) {
 		const newBall = await Ball.create({
 			userId: event.locals.user.id,
 			count: 0,
-			updatedAt: new Date()
+			updatedAt: now
 		});
 
 		ball = newBall.toObject();
@@ -24,7 +27,8 @@ export const load: PageServerLoad = async (event) => {
 		ball: {
 			...ball,
 			_id: ball._id.toString()
-		}
+		},
+		isClaimed: !isYesterday(ball.updatedAt, now)
 	};
 };
 
@@ -38,6 +42,9 @@ export const actions: Actions = {
 	push: async (event) => {
 		const ball = await Ball.findOne({ userId: event.locals.user?.id }).lean();
 		if (!ball) return redirect(302, '?/signOut');
+		if (!isYesterday(ball.updatedAt, new Date())) {
+			return redirect(403, '/');
+		}
 
 		await Ball.updateOne(
 			{ userId: event.locals.user?.id },
