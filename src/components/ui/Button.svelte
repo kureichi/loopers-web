@@ -30,7 +30,7 @@
 
 <button
     {...rest}
-    class="rounded-xl hover:opacity-95 {backgroundColor} px-6 py-3 font-medium {textColor} transition-all active:opacity-100 disabled:opacity-80 {klass} cursor-pointer"
+    class="rounded-xl hover:opacity-95 {backgroundColor} px-6 py-3 font-medium {textColor} transition-all active:scale-98 active:opacity-100 disabled:opacity-80 {klass} cursor-pointer"
 >
     {@render children()}
 </button>
