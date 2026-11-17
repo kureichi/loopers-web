@@ -9,9 +9,9 @@
 @import '@fontsource/open-sauce-sans/900.css';
 
 @theme {
-	--background-color: var(--color-black);
-	--color-text-primary: white;
-	--color-text-secondary: var(--color-neutral-300);
-	--color-white: #eeeeee;
-	--color-accent: #db4952;
+    --background-color: var(--color-black);
+    --color-text-primary: white;
+    --color-text-secondary: var(--color-neutral-300);
+    --color-white: #eeeeee;
+    --color-accent: #db4952;
 }
