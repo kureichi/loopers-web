@@ -1,36 +1,36 @@
 <script lang="ts">
-	import type { Snippet } from 'svelte';
-	import type { HTMLButtonAttributes } from 'svelte/elements';
+    import type { Snippet } from 'svelte';
+    import type { HTMLButtonAttributes } from 'svelte/elements';
 
-	interface Props extends HTMLButtonAttributes {
-		theme?: string;
-		children: Snippet;
-	}
+    interface Props extends HTMLButtonAttributes {
+        theme?: string;
+        children: Snippet;
+    }
 
-	let { children, theme, class: klass, ...rest }: Props = $props();
+    let { children, theme, class: klass, ...rest }: Props = $props();
 
-	let backgroundColor = $derived.by(() => {
-		switch (theme) {
-			case 'zzz':
-				return 'bg-[#db4952]';
-			default:
-				return 'bg-white';
-		}
-	});
+    let backgroundColor = $derived.by(() => {
+        switch (theme) {
+            case 'zzz':
+                return 'bg-[#db4952]';
+            default:
+                return 'bg-white';
+        }
+    });
 
-	let textColor = $derived.by(() => {
-		switch (theme) {
-			case 'zzz':
-				return 'text-white';
-			default:
-				return 'text-black';
-		}
-	});
+    let textColor = $derived.by(() => {
+        switch (theme) {
+            case 'zzz':
+                return 'text-white';
+            default:
+                return 'text-black';
+        }
+    });
 </script>
 
 <button
-	{...rest}
-	class="rounded-xl hover:opacity-95 {backgroundColor} px-6 py-3 font-medium {textColor} disabled:opacity-80 {klass} cursor-pointer"
+    {...rest}
+    class="rounded-xl hover:opacity-95 {backgroundColor} px-6 py-3 font-medium {textColor} transition-all active:opacity-100 disabled:opacity-80 {klass} cursor-pointer"
 >
-	{@render children()}
+    {@render children()}
 </button>
