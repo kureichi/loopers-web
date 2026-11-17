@@ -69,7 +69,7 @@
 </script>
 
 <Wrapper>
-    <div class="flex h-screen w-full flex-col items-center justify-center">
+    <div class="flex h-dvh w-full flex-col items-center justify-center">
         <h1 class="text-4xl font-bold tracking-tight">Hello, {user.name}</h1>
         <div
             class="mt-20 flex h-50 w-50 items-center justify-center rounded-full bg-white text-6xl font-bold text-black"

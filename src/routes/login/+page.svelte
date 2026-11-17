@@ -5,7 +5,7 @@
 </script>
 
 <Wrapper>
-    <div class="flex h-screen w-full items-center justify-center">
+    <div class="flex h-dvh w-full items-center justify-center">
         <div class="flex w-100 flex-col gap-4">
             <div class="flex flex-col gap-10 text-center">
                 <h1 class="text-3xl font-bold tracking-tight">Welcome back</h1>
