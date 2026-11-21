@@ -8,6 +8,7 @@
         count: number;
         isClaimed: boolean;
         user: User;
+        percentNumber: number;
     }
 
     let isHoldClick = $state(false);
@@ -65,7 +66,7 @@
         console.log(isHoldClick);
     });
 
-    let { count, isClaimed, user }: Props = $props();
+    let { count, isClaimed, user, percentNumber }: Props = $props();
 </script>
 
 <Wrapper>
@@ -77,7 +78,17 @@
             {count}
         </div>
 
-        <div class="mt-15 flex w-full max-w-100 gap-1">
+        <div class="mt-10 flex w-full flex-col gap-2">
+            <div class="h-2 w-full rounded-full bg-neutral-800">
+                <div
+                    class="h-full rounded-full bg-white"
+                    style="width: {percentNumber.toFixed(3)}%"
+                ></div>
+            </div>
+            <p class="text-right text-sm">{percentNumber.toFixed(8)}%</p>
+        </div>
+
+        <div class="mt-15 flex w-full gap-1">
             {#if isWantReset}
                 <form action="?/reset" class="flex flex-1" method="post" use:enhance>
                     <Button class="w-full bg-accent! text-white!">Reset</Button>

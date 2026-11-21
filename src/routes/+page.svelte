@@ -3,11 +3,11 @@
     import { browser } from '$app/env';
     import { onMount } from 'svelte';
     import Simple from '../components/modules/themes/Simple.svelte';
+    import { getSeconds } from '#lib/utils.js';
 
     let { data } = $props();
 
     let count = $derived(data.ball.count);
-
     let isClaimed = $derived(data.isClaimed);
 
     async function subscribeUser() {
@@ -52,6 +52,24 @@
 
         await subscribeUser();
     });
+
+    const getPercent = () => {
+        // harcoded to 10 days
+        const finalDate = new Date(data.ball.createdAt.getDate() + 10);
+        const finalSeconds = getSeconds(data.ball.createdAt, finalDate);
+        const nowSeconds = getSeconds(data.ball.createdAt, new Date());
+
+        return (nowSeconds / finalSeconds) * 100;
+    };
+    let percentNumber = $state(getPercent());
+
+    $effect(() => {
+        const interval = setInterval(() => {
+            percentNumber = getPercent();
+        }, 1000);
+
+        return () => clearInterval(interval);
+    });
 </script>
 
-<Simple {count} {isClaimed} user={data.user} />
+<Simple {count} {isClaimed} user={data.user} {percentNumber} />

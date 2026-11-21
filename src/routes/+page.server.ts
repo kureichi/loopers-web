@@ -28,6 +28,7 @@ export const load: PageServerLoad = async (event) => {
             ...ball,
             _id: ball._id.toString()
         },
+        now,
         isClaimed: !isYesterday(ball.updatedAt, now)
     };
 };
@@ -64,7 +65,8 @@ export const actions: Actions = {
             { userId: event.locals.user?.id },
             {
                 count: 0,
-                updatedAt: new Date()
+                updatedAt: new Date(),
+                createdAt: new Date()
             }
         );
 
