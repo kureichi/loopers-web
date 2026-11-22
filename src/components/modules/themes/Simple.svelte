@@ -82,10 +82,10 @@
             <div class="h-2 w-full rounded-full bg-neutral-800">
                 <div
                     class="h-full rounded-full bg-white"
-                    style="width: {percentNumber.toFixed(3)}%"
+                    style="width: {percentNumber.toFixed(4)}%"
                 ></div>
             </div>
-            <p class="text-right text-sm">{percentNumber.toFixed(8)}%</p>
+            <p class="text-right text-sm">{percentNumber.toFixed(4)}%</p>
         </div>
 
         <div class="mt-15 flex w-full gap-1">
