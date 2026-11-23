@@ -3,6 +3,7 @@ import type { Actions, PageServerLoad } from './$types';
 import { auth } from '#lib/server/auth.ts';
 import Ball from '#lib/server/db/models/ball.ts';
 import { isYesterday } from '#lib/utils.js';
+import SearchHistory from '#lib/server/db/models/searchHistory.ts';
 
 export const load: PageServerLoad = async (event) => {
     if (!event.locals.user) {
@@ -22,6 +23,15 @@ export const load: PageServerLoad = async (event) => {
         ball = newBall.toObject();
     }
 
+    let searchHistory = await SearchHistory.findOne({ userId: event.locals.user.id }).lean();
+    if (!searchHistory) {
+        const newSearchHistory = await SearchHistory.create({
+            userId: event.locals.user.id
+        });
+
+        searchHistory = newSearchHistory.toObject();
+    }
+
     return {
         user: event.locals.user,
         ball: {
@@ -29,7 +39,11 @@ export const load: PageServerLoad = async (event) => {
             _id: ball._id.toString()
         },
         now,
-        isClaimed: !isYesterday(ball.updatedAt, now)
+        isClaimed: !isYesterday(ball.updatedAt, now),
+        searchHistory: {
+            ...searchHistory,
+            _id: searchHistory._id.toString()
+        }
     };
 };
 
@@ -71,5 +85,32 @@ export const actions: Actions = {
         );
 
         return redirect(302, '/');
+    },
+    submitSearch: async (event) => {
+        const searchHistory = await SearchHistory.findOne({ userId: event.locals.user?.id }).lean();
+        if (!searchHistory) return redirect(302, '?/signOut');
+
+        const formData = await event.request.formData();
+        const query = String(formData.get('query') || '').trim();
+        if (!query) return redirect(302, '/');
+
+        const done = () => {
+            return redirect(302, `https://www.google.com/search?q=${encodeURIComponent(query)}`, {
+                external: true
+            });
+        };
+
+        if (searchHistory.history.includes(query)) {
+            return done();
+        }
+
+        await SearchHistory.updateOne(
+            { userId: event.locals.user?.id },
+            {
+                history: [query, ...searchHistory.history]
+            }
+        );
+
+        return done();
     }
 };
