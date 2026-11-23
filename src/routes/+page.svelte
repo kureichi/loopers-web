@@ -2,9 +2,9 @@
     import { subOptions } from '#lib/utils/vapidKey.js';
     import { browser } from '$app/env';
     import { onMount } from 'svelte';
-    import Simple from '../components/modules/themes/Simple.svelte';
     import { getSeconds } from '#lib/utils.js';
     import { SvelteDate } from 'svelte/reactivity';
+    import SearchEngine from '../components/modules/themes/SearchEngine.svelte';
 
     let { data } = $props();
 
@@ -75,4 +75,10 @@
     });
 </script>
 
-<Simple {count} {isClaimed} user={data.user} {percentNumber} />
+<SearchEngine
+    {count}
+    {isClaimed}
+    user={data.user}
+    {percentNumber}
+    searchHistory={data.searchHistory.history}
+/>
