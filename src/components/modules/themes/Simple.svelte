@@ -1,15 +1,8 @@
 <script lang="ts">
-    import type { User } from 'better-auth';
     import Wrapper from '../../ui/Wrapper.svelte';
     import Button from '../../ui/Button.svelte';
     import { enhance } from '$app/forms';
-
-    interface Props {
-        count: number;
-        isClaimed: boolean;
-        user: User;
-        percentNumber: number;
-    }
+    import type { ThemeProps } from '#lib/types/ThemeProps.ts';
 
     let isHoldClick = $state(false);
     let timeoutWantReset: NodeJS.Timeout | undefined = $state();
@@ -66,7 +59,7 @@
         console.log(isHoldClick);
     });
 
-    let { count, isClaimed, user, percentNumber }: Props = $props();
+    let { count, isClaimed, user, percentNumber }: ThemeProps = $props();
 </script>
 
 <Wrapper>
