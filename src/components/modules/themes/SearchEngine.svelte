@@ -194,38 +194,6 @@
                             </button>
                         {/if}
                     {/each}
-                    <!-- {#if query.length >= 2} -->
-                    <!--     {#each searchHistory as item (item)} -->
-                    <!--         {#if item.includes(query)} -->
-                    <!--             <button -->
-                    <!--                 onclick={() => { -->
-                    <!--                     query = item; -->
-                    <!--                     console.log('test'); -->
-                    <!--                     // submitSearch(); -->
-                    <!--                 }} -->
-                    <!--                 class="flex h-fit cursor-pointer items-center justify-center gap-2 rounded-2xl px-4 py-2 text-left transition-all hover:bg-neutral-800" -->
-                    <!--             > -->
-                    <!--                 <i class="ph ph-clock-counter-clockwise"></i> -->
-                    <!--                 {item} -->
-                    <!--             </button> -->
-                    <!--         {/if} -->
-                    <!--     {/each} -->
-                    <!-- {/if} -->
-                    <!-- {#each suggestions as item, index (item)} -->
-                    <!--     <button -->
-                    <!--         onclick={() => { -->
-                    <!--             query = item; -->
-                    <!--             console.log('test'); -->
-                    <!--             // submitSearch(); -->
-                    <!--         }} -->
-                    <!--         class="h-fit cursor-pointer rounded-2xl px-4 py-2 text-left transition-all hover:bg-neutral-800 {index == -->
-                    <!--         selectedIndex -->
-                    <!--             ? 'bg-neutral-800' -->
-                    <!--             : ''}" -->
-                    <!--     > -->
-                    <!--         {item} -->
-                    <!--     </button> -->
-                    <!-- {/each} -->
                 </div>
             </div>
         </div>
