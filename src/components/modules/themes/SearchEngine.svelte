@@ -1,6 +1,7 @@
 <script lang="ts">
     import type { ThemeProps } from '#lib/types/ThemeProps.ts';
     import { enhance } from '$app/forms';
+    import { untrack } from 'svelte';
     let pushLoading = $state(false);
     let now = $state(new Date());
     let hours = $derived(String(now.getHours()).padStart(2, '0'));
@@ -58,22 +59,6 @@
         submitButton.click();
     }
 
-    function handleKeydown(e: KeyboardEvent): void {
-        if (e.key === 'ArrowDown') {
-            e.preventDefault();
-            selectedIndex = (selectedIndex + 1) % suggestions.length;
-            query = suggestions[selectedIndex];
-        } else if (e.key === 'ArrowUp') {
-            e.preventDefault();
-            selectedIndex = (selectedIndex - 1 + suggestions.length) % suggestions.length;
-            query = suggestions[selectedIndex];
-        } else if (e.key === 'Escape') {
-            suggestions = [];
-            selectedIndex = -1;
-        } else if (e.key === 'Enter') {
-            submitSearch();
-        }
-    }
     const update = () => {
         now = new Date();
     };
@@ -92,6 +77,45 @@
     }
 
     let { searchHistory, ...props }: Props = $props();
+
+    type Suggestions = {
+        value: string;
+        history: boolean;
+    };
+
+    let combinedSuggestions = $derived.by(() => {
+        const suggestionsTransformed: Suggestions[] = suggestions.map((m) => ({
+            value: m,
+            history: false
+        }));
+        const clearedHistory = searchHistory.filter((m) =>
+            m.startsWith(untrack(() => query).toLowerCase())
+        );
+        const historyTransformed: Suggestions[] = clearedHistory.map((m) => ({
+            value: m,
+            history: true
+        }));
+
+        return [...historyTransformed, ...suggestionsTransformed];
+    });
+
+    function handleKeydown(e: KeyboardEvent): void {
+        if (e.key === 'ArrowRight') {
+            e.preventDefault();
+            selectedIndex = (selectedIndex + 1) % combinedSuggestions.length;
+            query = combinedSuggestions[selectedIndex].value;
+        } else if (e.key === 'ArrowLeft') {
+            e.preventDefault();
+            selectedIndex =
+                (selectedIndex - 1 + combinedSuggestions.length) % combinedSuggestions.length;
+            query = combinedSuggestions[selectedIndex].value;
+        } else if (e.key === 'Escape') {
+            combinedSuggestions = [];
+            selectedIndex = -1;
+        } else if (e.key === 'Enter') {
+            submitSearch();
+        }
+    }
 </script>
 
 <form class="hidden" action="?/submitSearch" method="post">
@@ -142,37 +166,33 @@
                     : 'h-0'} transition-all"
             >
                 <div class="flex flex-wrap gap-2">
-                    {#if query.length >= 2}
-                        {#each searchHistory as item (item)}
-                            {#if item.includes(query)}
-                                <button
-                                    onclick={() => {
-                                        query = item;
-                                        console.log('test');
-                                        // submitSearch();
-                                    }}
-                                    class="flex h-fit cursor-pointer items-center justify-center gap-2 rounded-2xl px-4 py-2 text-left transition-all hover:bg-neutral-800"
-                                >
-                                    <i class="ph ph-clock-counter-clockwise"></i>
-                                    {item}
-                                </button>
-                            {/if}
-                        {/each}
-                    {/if}
-                    {#each suggestions as item, index (item)}
-                        <button
-                            onclick={() => {
-                                query = item;
-                                console.log('test');
-                                // submitSearch();
-                            }}
-                            class="h-fit cursor-pointer rounded-2xl px-4 py-2 text-left transition-all hover:bg-neutral-800 {index ==
-                            selectedIndex
-                                ? 'bg-neutral-800'
-                                : ''}"
-                        >
-                            {item}
-                        </button>
+                    {#each combinedSuggestions as item, index (item.value)}
+                        {#if item.history}
+                            <button
+                                onclick={() => {
+                                    query = item.value;
+                                }}
+                                class="flex h-fit cursor-pointer items-center justify-center gap-2 rounded-2xl px-4 py-2 text-left transition-all hover:bg-neutral-800 {index ==
+                                selectedIndex
+                                    ? 'bg-neutral-800'
+                                    : ''}"
+                            >
+                                <i class="ph ph-clock-counter-clockwise"></i>
+                                {item.value}
+                            </button>
+                        {:else if !item.history}
+                            <button
+                                onclick={() => {
+                                    query = item.value;
+                                }}
+                                class="h-fit cursor-pointer rounded-2xl px-4 py-2 text-left transition-all hover:bg-neutral-800 {index ==
+                                selectedIndex
+                                    ? 'bg-neutral-800'
+                                    : ''}"
+                            >
+                                {item.value}
+                            </button>
+                        {/if}
                     {/each}
                 </div>
             </div>
