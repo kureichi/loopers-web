@@ -91,7 +91,7 @@
             history: false
         }));
         const clearedHistory = searchHistory.filter((m) =>
-            m.startsWith(untrack(() => query).toLowerCase())
+            m.toLowerCase().startsWith(untrack(() => query).toLowerCase())
         );
         const historyTransformed: Suggestions[] = clearedHistory.map((m) => ({
             id: crypto.randomUUID(),
