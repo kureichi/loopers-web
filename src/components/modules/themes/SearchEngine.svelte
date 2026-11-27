@@ -79,12 +79,14 @@
     let { searchHistory, ...props }: Props = $props();
 
     type Suggestions = {
+        id: string;
         value: string;
         history: boolean;
     };
 
     let combinedSuggestions = $derived.by(() => {
         const suggestionsTransformed: Suggestions[] = suggestions.map((m) => ({
+            id: crypto.randomUUID(),
             value: m,
             history: false
         }));
@@ -92,6 +94,7 @@
             m.startsWith(untrack(() => query).toLowerCase())
         );
         const historyTransformed: Suggestions[] = clearedHistory.map((m) => ({
+            id: crypto.randomUUID(),
             value: m,
             history: true
         }));
@@ -166,7 +169,7 @@
                     : 'h-0'} transition-all"
             >
                 <div class="flex flex-wrap gap-2">
-                    {#each combinedSuggestions as item, index (item.value)}
+                    {#each combinedSuggestions as item, index (item.id)}
                         {#if item.history}
                             <button
                                 onclick={() => {
