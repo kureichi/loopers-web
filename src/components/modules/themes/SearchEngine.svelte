@@ -85,6 +85,8 @@
     };
 
     let combinedSuggestions = $derived.by(() => {
+        if (!query) return [];
+
         const suggestionsTransformed: Suggestions[] = suggestions.map((m) => ({
             id: crypto.randomUUID(),
             value: m,
