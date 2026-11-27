@@ -5,11 +5,9 @@
     import { getSeconds } from '#lib/utils.js';
     import { SvelteDate } from 'svelte/reactivity';
     import SearchEngine from '../components/modules/themes/SearchEngine.svelte';
-
     let { data } = $props();
 
-    let count = $derived(data.ball.count);
-    let isClaimed = $derived(data.isClaimed);
+    let streamedData = $state<Awaited<typeof data.streamResponse> | null>(null);
 
     async function subscribeUser() {
         if (!browser || !('serviceWorker' in navigator)) return;
@@ -55,12 +53,13 @@
     });
 
     const getPercent = () => {
+        if (!streamedData) return null;
         // harcoded to 10 days
-        const finalDate = new SvelteDate(data.ball.createdAt);
+        const finalDate = new SvelteDate(streamedData.ball.createdAt);
         finalDate.setDate(finalDate.getDate() + 10);
 
-        const finalSeconds = getSeconds(data.ball.createdAt, finalDate);
-        const nowSeconds = getSeconds(data.ball.createdAt, new Date());
+        const finalSeconds = getSeconds(streamedData.ball.createdAt, finalDate);
+        const nowSeconds = getSeconds(streamedData.ball.createdAt, new Date());
 
         return (nowSeconds / finalSeconds) * 100;
     };
@@ -73,12 +72,18 @@
 
         return () => clearInterval(interval);
     });
+
+    $effect(() => {
+        data.streamResponse.then((data) => {
+            streamedData = data;
+        });
+    });
 </script>
 
 <SearchEngine
-    {count}
-    {isClaimed}
+    count={streamedData?.ball.count || 0}
+    isClaimed={streamedData?.isClaimed || false}
     user={data.user}
-    {percentNumber}
-    searchHistory={data.searchHistory.history}
+    percentNumber={percentNumber || 0}
+    searchHistory={streamedData?.searchHistory.history || []}
 />

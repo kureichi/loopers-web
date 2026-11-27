@@ -228,7 +228,7 @@
                 <div class="flex w-full flex-col gap-2">
                     <div class="h-2 w-full rounded-full bg-neutral-800">
                         <div
-                            class="h-full rounded-full bg-white"
+                            class="h-full rounded-full bg-white transition-all"
                             style="width: {props.percentNumber.toFixed(2)}%"
                         ></div>
                     </div>

@@ -12,38 +12,44 @@ export const load: PageServerLoad = async (event) => {
 
     const now = new Date();
 
-    let ball = await Ball.findOne({ userId: event.locals.user.id }).lean();
-    if (!ball) {
-        const newBall = await Ball.create({
-            userId: event.locals.user.id,
-            count: 0,
-            updatedAt: now
-        });
+    const fetchData = async () => {
+        let ball = await Ball.findOne({ userId: event.locals.user?.id }).lean();
+        if (!ball) {
+            const newBall = await Ball.create({
+                userId: event.locals.user?.id,
+                count: 0,
+                updatedAt: now
+            });
 
-        ball = newBall.toObject();
-    }
+            ball = newBall.toObject();
+        }
 
-    let searchHistory = await SearchHistory.findOne({ userId: event.locals.user.id }).lean();
-    if (!searchHistory) {
-        const newSearchHistory = await SearchHistory.create({
-            userId: event.locals.user.id
-        });
+        let searchHistory = await SearchHistory.findOne({ userId: event.locals.user?.id }).lean();
+        if (!searchHistory) {
+            const newSearchHistory = await SearchHistory.create({
+                userId: event.locals.user?.id
+            });
 
-        searchHistory = newSearchHistory.toObject();
-    }
+            searchHistory = newSearchHistory.toObject();
+        }
+
+        return {
+            ball: {
+                ...ball,
+                _id: ball._id.toString()
+            },
+            isClaimed: !isYesterday(ball.updatedAt, now),
+            searchHistory: {
+                ...searchHistory,
+                _id: searchHistory._id.toString()
+            }
+        };
+    };
 
     return {
         user: event.locals.user,
-        ball: {
-            ...ball,
-            _id: ball._id.toString()
-        },
         now,
-        isClaimed: !isYesterday(ball.updatedAt, now),
-        searchHistory: {
-            ...searchHistory,
-            _id: searchHistory._id.toString()
-        }
+        streamResponse: fetchData()
     };
 };
 
