@@ -1,6 +1,6 @@
 <script lang="ts">
     import type { ThemeProps } from '#lib/types/ThemeProps.ts';
-    import { enhance } from '$app/forms';
+    import { enhance, type SubmitFunction } from '$app/forms';
     import { untrack } from 'svelte';
     let pushLoading = $state(false);
     let now = $state(new Date());
@@ -121,6 +121,17 @@
             submitSearch();
         }
     }
+
+    const handleSubmit: SubmitFunction = () => {
+        return async ({ result, update }) => {
+            await update();
+
+            if (result.type === 'success') {
+                pushLoading = false;
+                console.log('Test');
+            }
+        };
+    };
 </script>
 
 <form class="hidden" action="?/submitSearch" method="post">
@@ -207,7 +218,22 @@
     <!-- widget container -->
     <div class="flex h-30 w-full justify-center gap-2 p-8">
         <!-- counter -->
-        <form action="?/push" method="post" class="w-full max-w-80" use:enhance>
+        <form
+            action="?/push"
+            method="post"
+            class="w-full max-w-80"
+            use:enhance={() => {
+                pushLoading = true;
+
+                return async ({ result, update }) => {
+                    if (result.type === 'success') {
+                        pushLoading = false;
+                    }
+
+                    await update();
+                };
+            }}
+        >
             <button
                 class="flex w-full {pushLoading
                     ? 'animate-pulse'
@@ -216,7 +242,6 @@
                     : 'cursor-default'} transition-all active:scale-98"
                 disabled={props.isClaimed}
                 type="submit"
-                onclick={() => (pushLoading = true)}
             >
                 <div
                     class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-2 border-neutral-600 {!props.isClaimed

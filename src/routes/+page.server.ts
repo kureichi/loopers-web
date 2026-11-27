@@ -75,7 +75,9 @@ export const actions: Actions = {
             }
         );
 
-        return redirect(302, '/');
+        return {
+            success: true
+        };
     },
     reset: async (event) => {
         const ball = await Ball.findOne({ userId: event.locals.user?.id }).lean();
@@ -90,7 +92,9 @@ export const actions: Actions = {
             }
         );
 
-        return redirect(302, '/');
+        return {
+            success: true
+        };
     },
     submitSearch: async (event) => {
         const searchHistory = await SearchHistory.findOne({ userId: event.locals.user?.id }).lean();
